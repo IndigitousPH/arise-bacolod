@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>Arise PH Booth</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,600;112,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: one narrow column, phone-first — a booth visitor fills it on their own phone in under a minute */
+:root{
+  --bg:#F6F7F4; --surface:#FFFFFF; --ink:#13212C; --muted:#56636C; --line:#D9DED9;
+  --gold:#E3A21A; --gold-ink:#5C3D00; --teal:#0F7472; --teal-soft:#E3F1EF; --err:#B3261E;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E171E; --surface:#16222B; --ink:#EEF1EE; --muted:#9FAAB0; --line:#2A3943;
+  --gold:#F2B637; --gold-ink:#2A1B00; --teal:#4FC1BC; --teal-soft:#123331; --err:#FF8A80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E171E; --surface:#16222B; --ink:#EEF1EE; --muted:#9FAAB0; --line:#2A3943;
+  --gold:#F2B637; --gold-ink:#2A1B00; --teal:#4FC1BC; --teal-soft:#123331; --err:#FF8A80; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;margin:0}
+.wrap{max-width:560px;margin:0 auto;padding-block:28px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:28px}
+
+.lockup{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:var(--display);font-weight:600;
+  font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lockup b{color:var(--ink);font-weight:800}
+.lockup .x{color:var(--gold)}
+
+h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,8vw,42px);line-height:1.02;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--gold) 62%,var(--gold) 92%,transparent 92%)}
+.lede{margin:12px 0 0;color:var(--muted);max-width:60ch}
+
+.raffle{display:flex;gap:12px;align-items:center;background:var(--gold);color:var(--gold-ink);border-radius:14px;padding:12px 16px;font-weight:700}
+.raffle svg{flex:none}
+
+form{display:flex;flex-direction:column;gap:26px}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+legend{font-family:var(--display);font-weight:800;font-size:19px;padding:0;margin-bottom:4px}
+legend small{display:block;font-family:var(--body);font-weight:400;font-size:15px;color:var(--muted);margin-top:2px}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid .full{grid-column:1/-1}
+@media (max-width:460px){.grid{grid-template-columns:1fr}}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px;min-width:0}
+label.f span.opt{font-weight:400;color:var(--muted)}
+input[type=text],input[type=tel],input[type=email],select{
+  font:inherit;font-size:17px;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);
+  border-radius:10px;padding:12px 13px;width:100%;min-width:0}
+input:focus-visible,select:focus-visible{outline:3px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
+input[aria-invalid=true]{border-color:var(--err)}
+
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice{position:relative;display:flex;gap:14px;align-items:flex-start;background:var(--surface);
+  border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.box{flex:none;width:24px;height:24px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;margin-top:2px;background:var(--bg)}
+.box svg{opacity:0}
+.choice:has(input:checked){border-color:var(--teal);background:var(--teal-soft)}
+.choice:has(input:checked) .box{background:var(--teal);border-color:var(--teal)}
+.choice:has(input:checked) .box svg{opacity:1}
+.choice:has(input:focus-visible){outline:3px solid var(--teal);outline-offset:2px}
+.choice strong{display:block;font-family:var(--display);font-weight:800;font-size:17px;line-height:1.2}
+.choice p{margin:4px 0 0;font-size:15px;color:var(--muted)}
+.box svg path{stroke:var(--surface)}
+
+.sub{display:flex;gap:8px;flex-wrap:wrap;margin:-2px 0 2px 38px}
+.pill{position:relative}
+.pill input{position:absolute;opacity:0}
+.pill span{display:inline-block;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:15px;font-weight:700;cursor:pointer}
+.pill input:checked+span{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pill input:focus-visible+span{outline:3px solid var(--teal);outline-offset:2px}
+.hackmeta{margin:0 0 0 38px;font-size:14px;color:var(--muted)}
+
+.consent{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:var(--muted)}
+.consent input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--teal)}
+
+button.go{font:inherit;font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:.02em;
+  background:var(--ink);color:var(--bg);border:0;border-radius:14px;padding:17px;cursor:pointer;width:100%}
+button.go:hover{background:var(--teal)}
+button.go:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+button.go[disabled]{opacity:.6;cursor:progress}
+.error{color:var(--err);font-weight:700;margin:0}
+
+.done{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:26px 22px;display:flex;flex-direction:column;gap:14px}
+.ticket{align-self:flex-start;font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:.06em;
+  background:var(--gold);color:var(--gold-ink);padding:8px 16px;border-radius:10px;font-variant-numeric:tabular-nums}
+.done h2{font-family:var(--display);font-weight:800;font-size:26px;margin:0;line-height:1.1}
+.done p{margin:0;color:var(--muted)}
+.done ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+button.again{font:inherit;font-weight:700;background:transparent;color:var(--teal);border:1.5px solid var(--teal);border-radius:12px;padding:12px;cursor:pointer}
+
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+footer a{color:var(--teal)}
+@media (prefers-reduced-motion:no-preference){.choice,.pill span,button{transition:background .15s,border-color .15s}}
+</style>
+
+<main class="wrap">
+  <header>
+    <div class="lockup"><b>Cru Philippines</b><span class="x">×</span><b>Indigitous</b><span>· Arise Philippines</span></div>
+  </header>
+
+  <section>
+    <h1>Your campus is already online. <em>Let's go there together.</em></h1>
+    <p class="lede">We're helping students and churches live out missions in a digital age. Leave your details, pick how you'd like to take part, and you're in today's raffle.</p>
+  </section>
+
+  <div class="raffle">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4V8Z" stroke="currentColor" stroke-width="2"/><path d="M14 6v12" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/></svg>
+    <span>Every sign-up gets a raffle number. Watch for the draw at our booth.</span>
+  </div>
+
+  <form id="signup" novalidate>
+    <fieldset>
+      <legend>About you</legend>
+      <div class="grid">
+        <label class="f full" for="name">Full name
+          <input id="name" name="name" type="text" autocomplete="name" required>
+        </label>
+        <label class="f" for="mobile">Mobile number
+          <input id="mobile" name="mobile" type="tel" inputmode="tel" autocomplete="tel" placeholder="09XX XXX XXXX" required>
+        </label>
+        <label class="f" for="email">Email <span class="opt">(optional)</span>
+          <input id="email" name="email" type="email" autocomplete="email">
+        </label>
+        <label class="f full" for="org">Campus or church
+          <input id="org" name="org" type="text" placeholder="e.g. UP Visayas, or your church's name" required>
+        </label>
+        <label class="f" for="role">I am a…
+          <select id="role" name="role">
+            <option value="">Choose one</option>
+            <option>Student</option>
+            <option>Campus or youth leader</option>
+            <option>Pastor or church staff</option>
+            <option>Young professional</option>
+            <option>Ministry worker</option>
+            <option>Other</option>
+          </select>
+        </label>
+        <label class="f" for="city">City or province
+          <input id="city" name="city" type="text" autocomplete="address-level2">
+        </label>
+        <label class="f full" for="facebook">Facebook name or link <span class="opt">(optional)</span>
+          <input id="facebook" name="facebook" type="text" placeholder="So we can message you">
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>How do you want to take part?<small>Pick any that fit. You can also just join the raffle.</small></legend>
+      <div class="choices">
+        <label class="choice" for="c-campus">
+          <input id="c-campus" type="checkbox" name="interest" value="Reach my campus">
+          <span class="box"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5.5 11 12 3.5" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span><strong>I commit to reach my campus</strong><p>Pray for and share Jesus with the people on your campus, online and in person. We'll help you start.</p></span>
+        </label>
+
+        <label class="choice" for="c-hack">
+          <input id="c-hack" type="checkbox" name="interest" value="Join #HACK">
+          <span class="box"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5.5 11 12 3.5" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span><strong>Keep me posted about #HACK</strong><p>Creatives, writers, designers and builders come together to make things that help more people discover Jesus. No coding needed.</p></span>
+        </label>
+        <div id="hack-where" class="sub" role="radiogroup" aria-label="Where would you join #HACK?" hidden>
+          <label class="pill"><input type="radio" name="hack_where" value="Iloilo (in person)" id="hw-iloilo"><span>In Iloilo</span></label>
+          <label class="pill"><input type="radio" name="hack_where" value="Online" id="hw-online"><span>Online</span></label>
+        </div>
+        <p id="hack-meta" class="hackmeta" hidden>#HACK Christmas Iloilo · Nov 20–21 · Iloilo C&amp;MA Church, Smallville</p>
+
+        <label class="choice" for="c-outreach">
+          <input id="c-outreach" type="checkbox" name="interest" value="Digital outreach with church/campus">
+          <span class="box"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5.5 11 12 3.5" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span><strong>Run a digital outreach with my church or campus</strong><p>We'll walk your group through reaching people in our world in the digital space.</p></span>
+        </label>
+      </div>
+    </fieldset>
+
+    <label class="consent" for="consent">
+      <input id="consent" type="checkbox" name="consent" required>
+      <span>I agree that Cru Philippines and Indigitous may keep my details to run the raffle and contact me about what I picked, following the Data Privacy Act of 2012.</span>
+    </label>
+
+    <p id="error" class="error" role="alert" hidden></p>
+    <button class="go" type="submit" id="submit">Sign up &amp; get my raffle number</button>
+  </form>
+
+  <section id="done" class="done" hidden aria-live="polite">
+    <span class="ticket" id="ticket">AR-0000</span>
+    <h2 id="done-title">You're in, friend!</h2>
+    <p>Show this raffle number at the booth if your name is called. Take a screenshot so you have it.</p>
+    <ul id="done-list"></ul>
+    <button class="again" type="button" id="again">Sign up someone else</button>
+  </section>
+
+  <footer>Learn more: <a href="https://hack.indigitous.org" target="_blank" rel="noopener">hack.indigitous.org</a> · <a href="https://indigitous.org" target="_blank" rel="noopener">indigitous.org</a></footer>
+</main>
+
+<script>
+/* Paste your Google Apps Script web app URL here. Leave empty to run in preview mode. */
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbxQL_wGmPqvwYrwGBb2sGBlwP5jb7DxMPjsKuiewxAn6XNIl5rMYWi9qGjrb_uVBypu4w/exec";
+
+/* Sends one signup to the Google Sheet. Knows nothing about the form. */
+class SheetGateway {
+  constructor(endpoint) { this.endpoint = endpoint; }
+  isConfigured() { return this.endpoint.startsWith("https://script.google.com/"); }
+  async save(signup) {
+    if (!this.isConfigured()) return; // preview mode: nothing is sent
+    const body = new URLSearchParams(signup.toRecord());
+    // no-cors: Apps Script accepts the post; the response is opaque, so a network error is the only failure we can see
+    await fetch(this.endpoint, { method: "POST", mode: "no-cors", body });
+  }
+}
+
+/* One person's signup: holds the data and knows how to validate itself. */
+class Signup {
+  constructor(fields) { Object.assign(this, fields); this.ticket = Signup.newTicket(); }
+  static newTicket() { return "AR-" + String(Math.floor(1000 + Math.random() * 9000)); }
+  problems() {
+    const p = [];
+    if (!this.name.trim()) p.push("name");
+    if (this.mobile.replace(/\D/g, "").length < 10) p.push("mobile");
+    if (!this.org.trim()) p.push("org");
+    if (this.email && !/^\S+@\S+\.\S+$/.test(this.email)) p.push("email");
+    if (!this.consent) p.push("consent");
+    return p;
+  }
+  toRecord() {
+    return { ticket: this.ticket, name: this.name, mobile: this.mobile, email: this.email, org: this.org,
+      role: this.role, city: this.city, facebook: this.facebook, interests: this.interests.join(", "),
+      hack_where: this.hackWhere, source: "Arise Philippines booth" };
+  }
+}
+
+/* Wires the page: reads the form, shows errors, shows the confirmation. */
+class SignupForm {
+  constructor(gateway) {
+    this.gateway = gateway;
+    this.form = document.getElementById("signup");
+    this.form.addEventListener("submit", e => { e.preventDefault(); this.submit(); });
+    document.getElementById("c-hack").addEventListener("change", e => this.toggleHack(e.target.checked));
+    document.getElementById("again").addEventListener("click", () => this.reset());
+  }
+  toggleHack(on) {
+    document.getElementById("hack-where").hidden = !on;
+    document.getElementById("hack-meta").hidden = !on;
+  }
+  read() {
+    const v = id => document.getElementById(id).value.trim();
+    const where = this.form.querySelector("input[name=hack_where]:checked");
+    return new Signup({
+      name: v("name"), mobile: v("mobile"), email: v("email"), org: v("org"), role: v("role"),
+      city: v("city"), facebook: v("facebook"), consent: document.getElementById("consent").checked,
+      interests: [...this.form.querySelectorAll("input[name=interest]:checked")].map(i => i.value),
+      hackWhere: where ? where.value : ""
+    });
+  }
+  showError(msg) { const el = document.getElementById("error"); el.textContent = msg; el.hidden = !msg; }
+  async submit() {
+    const signup = this.read();
+    const problems = signup.problems();
+    ["name","mobile","org","email"].forEach(id =>
+      document.getElementById(id).setAttribute("aria-invalid", problems.includes(id)));
+    if (problems.length) {
+      const labels = { name:"your name", mobile:"a mobile number (11 digits)", org:"your campus or church", email:"a valid email", consent:"the privacy agreement" };
+      this.showError("Please add " + problems.map(p => labels[p]).join(", ") + ".");
+      return;
+    }
+    this.showError("");
+    const btn = document.getElementById("submit");
+    btn.disabled = true; btn.textContent = "Saving…";
+    try {
+      await this.gateway.save(signup);
+      this.confirm(signup);
+    } catch {
+      this.showError("We couldn't save that. Check your internet connection and tap Sign up again.");
+    } finally {
+      btn.disabled = false; btn.textContent = "Sign up & get my raffle number";
+    }
+  }
+  confirm(signup) {
+    document.getElementById("ticket").textContent = signup.ticket;
+    document.getElementById("done-title").textContent = "You're in, " + signup.name.split(" ")[0] + "!";
+    const next = {
+      "Reach my campus": "We'll message you to help you start reaching your campus.",
+      "Join #HACK": signup.hackWhere ? "We'll send you #HACK details (" + signup.hackWhere + ")." : "We'll send you #HACK details.",
+      "Digital outreach with church/campus": "We'll reach out to plan a digital outreach with your group."
+    };
+    document.getElementById("done-list").replaceChildren(...signup.interests.map(i => {
+      const li = document.createElement("li"); li.textContent = next[i]; return li;
+    }));
+    this.form.hidden = true;
+    document.getElementById("done").hidden = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  reset() {
+    this.form.reset(); this.toggleHack(false);
+    this.form.hidden = false; document.getElementById("done").hidden = true;
+    document.getElementById("name").focus();
+  }
+}
+
+new SignupForm(new SheetGateway(SHEET_ENDPOINT));
+</script>
+
+</body>
+</html>

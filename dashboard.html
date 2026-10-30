@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>Arise Booth Dashboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=Oswald:wght@600;700&display=swap">
+<style>
+/* Layout: booth-screen scoreboard — electric Arise band as the whole ground, torn-paper cards on top; big total left, three options right, live feed below */
+:root{
+  --ground:#2A2FC9; --violet:#5B2BD6; --magenta:#E04FC4; --cyan:#29C4F0; --orange:#FF6A13;
+  --paper:#F1EEE8; --card:#FBFAF7; --ink:#141019; --muted:#5A5466; --line:#D8D2C8; --onband:#FFFFFF;
+  --display:"Montserrat",system-ui,sans-serif; --cond:"Oswald","Arial Narrow",sans-serif;
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:var(--display);font-weight:500;color:var(--onband);
+  background:var(--grain),radial-gradient(70% 60% at 100% 0%,var(--magenta) 0,transparent 60%),radial-gradient(60% 60% at 0% 100%,var(--cyan) 0,transparent 55%),linear-gradient(135deg,var(--ground),var(--violet));background-attachment:fixed}
+.wrap{max-width:1200px;margin:0 auto;padding-block:24px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand .arise{font-weight:900;font-size:clamp(26px,4vw,40px);letter-spacing:.2em;line-height:1;text-shadow:-2px 0 var(--cyan),2px 0 var(--magenta)}
+.brand .sub{font-weight:800;font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.9}
+.brand .sub b{color:var(--orange)}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.status{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;opacity:.95}
+.dot{width:10px;height:10px;border-radius:50%;background:#7CF2A0;box-shadow:0 0 0 0 rgba(124,242,160,.7)}
+.dot.off{background:#FFB199}
+@media (prefers-reduced-motion:no-preference){.dot:not(.off){animation:pulse 2s infinite}}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(124,242,160,0)}100%{box-shadow:0 0 0 0 rgba(124,242,160,0)}}
+button.sound{font:inherit;font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;border:0;border-radius:10px;padding:11px 16px;cursor:pointer;background:var(--orange);color:var(--ink);box-shadow:4px 4px 0 var(--ink)}
+button.sound[aria-pressed=true]{background:var(--card)}
+button.sound:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+.demo{background:var(--ink);color:#fff;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:600}
+.demo b{color:var(--orange)}
+
+.grid{display:grid;grid-template-columns:300px minmax(0,4fr) minmax(0,6fr);gap:20px}
+@media (max-width:1150px){.grid{grid-template-columns:300px minmax(0,1fr)}.grid .options{grid-column:1/-1}}
+@media (max-width:700px){.grid{grid-template-columns:1fr}}
+/* "Scan to join" card, styled like the poster's Scan to Register box */
+.scan{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:22px;border-radius:22px;text-align:center;color:#fff;
+  background:linear-gradient(160deg,#3A3FE8,var(--violet) 50%,var(--magenta));border:3px solid #fff;box-shadow:6px 6px 0 rgba(20,16,25,.45);transform:rotate(.8deg)}
+.scan-title{font-weight:900;font-size:30px;line-height:1;letter-spacing:.02em}
+.qr{background:#fff;padding:14px;border-radius:12px;line-height:0}
+.qr img,.qr canvas{display:block;width:220px;height:220px}
+.scan-url{font-weight:800;font-size:13px;overflow-wrap:anywhere}
+.scan-note{font-size:14px;font-weight:600;opacity:.92}
+.paper{background:var(--paper) var(--grain);color:var(--ink);border-radius:6px;box-shadow:6px 6px 0 rgba(20,16,25,.35)}
+
+.total{padding:26px 26px 22px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;transform:rotate(-.8deg)}
+.label{font-weight:900;font-size:13px;letter-spacing:.18em;text-transform:uppercase}
+.big{font-family:var(--cond);font-weight:700;font-size:clamp(110px,16vw,190px);line-height:.9;font-variant-numeric:tabular-nums;
+  background:linear-gradient(100deg,var(--ground),var(--violet) 45%,var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent}
+.total .foot{font-size:14px;color:var(--muted);font-weight:600}
+.bump{animation:none}
+@media (prefers-reduced-motion:no-preference){.bump{animation:bump .7s ease-out}}
+@keyframes bump{0%{transform:scale(1)}30%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+.options{display:grid;gap:14px}
+.opt{padding:18px 20px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;align-items:center}
+.opt h3{margin:0;font-weight:900;font-size:clamp(16px,1.8vw,20px);line-height:1.15}
+.opt .n{grid-row:span 2;font-family:var(--cond);font-weight:700;font-size:clamp(46px,6vw,68px);line-height:1;font-variant-numeric:tabular-nums}
+.opt .meta{font-size:13px;color:var(--muted);font-weight:600}
+.bar{grid-column:1/-1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:99px;background:var(--orange)}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .6s ease}}
+.split{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1}
+.chip{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:99px;background:#EFEAFB;color:var(--violet)}
+.chip.free{background:#DDF3E6;color:#0D5A2C}
+
+.lower{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:20px}
+@media (max-width:820px){.lower{grid-template-columns:1fr}}
+.panel{padding:20px 22px;display:flex;flex-direction:column;gap:12px}
+.feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.feed li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 0;border-top:2px dashed var(--line)}
+.feed li:first-child{border-top:0}
+.tix{font-family:var(--cond);font-weight:700;font-size:18px;letter-spacing:.05em;background:var(--ink);color:#fff;border-radius:6px;padding:3px 10px;font-variant-numeric:tabular-nums}
+.who{min-width:0}
+.who b{display:block;font-weight:800;font-size:16px}
+.who span{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ago{font-size:12px;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
+.feed li.new{background:linear-gradient(90deg,#FFE6D6,transparent)}
+.orgs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.orgs li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;font-weight:700;font-size:15px}
+.orgs li span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.orgs li .bar{height:6px}
+.orgs li .bar i{background:var(--violet)}
+.empty{color:var(--muted);font-size:14px;margin:0}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--orange);color:var(--ink);font-weight:900;font-size:18px;padding:14px 22px;border-radius:12px;box-shadow:5px 5px 0 var(--ink);max-width:calc(100% - 32px)}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="arise">ARISE</span>
+      <span class="sub">Bacolod booth · <b>Cru Philippines × Indigitous</b></span>
+    </div>
+    <div class="controls">
+      <span class="status"><span class="dot off" id="dot"></span><span id="status">Connecting…</span></span>
+      <button class="sound" id="sound" type="button" aria-pressed="false">Turn on sound</button>
+    </div>
+  </header>
+
+  <p class="demo" id="demo" hidden><b>Demo data.</b> Example entries arrive every few seconds so you can test the chime. Paste your Apps Script URL into the page to show real sign-ups.</p>
+
+  <section class="grid">
+    <aside class="scan" aria-label="Scan to join on your phone">
+      <span class="scan-title">SCAN TO JOIN</span>
+      <div class="qr" id="qr"></div>
+      <span class="scan-url" id="scan-url"></span>
+      <span class="scan-note">Enter today's raffle on your phone</span>
+    </aside>
+    <div class="paper total">
+      <span class="label">Raffle entries</span>
+      <span class="big" id="total">0</span>
+      <span class="foot" id="updated">Waiting for the first entry</span>
+    </div>
+    <div class="options">
+      <article class="paper opt">
+        <h3>Committed to reach their campus</h3>
+        <span class="n" id="n-campus">0</span>
+        <span class="meta">Cru Philippines – Western Visayas follows up</span>
+        <div class="bar"><i id="b-campus"></i></div>
+      </article>
+      <article class="paper opt">
+        <h3>Want to join #HACK</h3>
+        <span class="n" id="n-hack">0</span>
+        <span class="meta">Some picked both events</span>
+        <div class="split"><span class="chip" id="c-iloilo">Iloilo · 0</span><span class="chip free" id="c-online">Online · 0</span></div>
+        <div class="bar"><i id="b-hack"></i></div>
+      </article>
+      <article class="paper opt">
+        <h3>Want to run a digital outreach</h3>
+        <span class="n" id="n-outreach">0</span>
+        <span class="meta">With their church or campus</span>
+        <div class="bar"><i id="b-outreach"></i></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="lower">
+    <div class="paper panel">
+      <span class="label">Latest sign-ups</span>
+      <ul class="feed" id="feed"></ul>
+      <p class="empty" id="feed-empty">New sign-ups will show here with their raffle number.</p>
+    </div>
+    <div class="paper panel">
+      <span class="label">Top campuses &amp; churches</span>
+      <ul class="orgs" id="orgs"></ul>
+      <p class="empty" id="orgs-empty">No campuses yet.</p>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* Paste the same Apps Script web app URL you used on the sign-up page. Leave empty for demo data. */
+const SHEET_ENDPOINT = "";
+const REFRESH_SECONDS = 10;
+
+/* The sign-up page the QR code opens. Leave empty if index.html sits in the same folder as this dashboard. */
+const SIGNUP_URL = "";
+
+/* Reads live totals from the Google Sheet (JSONP, so it works from any host). */
+class SheetStatsSource {
+  constructor(endpoint) { this.endpoint = endpoint; this.n = 0; }
+  isDemo() { return false; }
+  fetch() {
+    return new Promise((resolve, reject) => {
+      const cb = "__ariseStats" + (++this.n);
+      const s = document.createElement("script");
+      const done = () => { delete window[cb]; s.remove(); clearTimeout(t); };
+      const t = setTimeout(() => { done(); reject(new Error("timeout")); }, 15000);
+      window[cb] = data => { done(); resolve(data); };
+      s.onerror = () => { done(); reject(new Error("network")); };
+      s.src = this.endpoint + (this.endpoint.includes("?") ? "&" : "?") + "callback=" + cb + "&t=" + Date.now();
+      document.head.appendChild(s);
+    });
+  }
+}
+
+/* Makes up example entries so the page can be tried before the sheet is connected. */
+class DemoStatsSource {
+  constructor() {
+    this.rows = [];
+    this.names = ["Andrea","Miguel","Joy","Paolo","Kyla","Jerome","Bea","Carlo","Tricia","Nathan","Rica","Josh"];
+    this.orgs = ["UP Visayas","USLS","CPU","WVSU","La Salle Bacolod","Ikthus Church","STI West Negros","Riverside College"];
+    for (let i = 0; i < 6; i++) this.add(Date.now() - (6 - i) * 90000);
+  }
+  isDemo() { return true; }
+  pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  add(time) {
+    const interests = ["Reach my campus","Join #HACK","Digital outreach with church/campus"].filter(() => Math.random() < .5);
+    const where = interests.includes("Join #HACK") ? ["Iloilo (in person)","Online"].filter(() => Math.random() < .6) : [];
+    this.rows.push({ ticket: "AR-" + (1000 + Math.floor(Math.random() * 9000)), first: this.pick(this.names),
+      org: this.pick(this.orgs), interests: interests.join(", "), where: where.join(" + "), time: new Date(time).toISOString() });
+  }
+  async fetch() {
+    if (Math.random() < .5) this.add(Date.now());
+    const r = this.rows, has = (x, k) => x.interests.includes(k);
+    const orgs = {}; r.forEach(x => orgs[x.org] = (orgs[x.org] || 0) + 1);
+    return { total: r.length, campus: r.filter(x => has(x,"Reach my campus")).length, hack: r.filter(x => has(x,"Join #HACK")).length,
+      hackIloilo: r.filter(x => x.where.includes("Iloilo")).length, hackOnline: r.filter(x => x.where.includes("Online")).length,
+      outreach: r.filter(x => has(x,"Digital outreach")).length,
+      topOrgs: Object.entries(orgs).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 5),
+      recent: r.slice(-8).reverse(), updated: new Date().toISOString() };
+  }
+}
+
+/* A short bright two-note chime, made in the browser so there is no sound file to host. */
+class Chime {
+  constructor() { this.ctx = null; this.on = false; }
+  enable() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    this.ctx = this.ctx || new AC();
+    this.ctx.resume(); this.on = true; return true;
+  }
+  disable() { this.on = false; }
+  play() {
+    if (!this.on || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    [[1046.5, 0], [1568, .14], [2093, .28]].forEach(([freq, at]) => {
+      const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+      o.type = "triangle"; o.frequency.value = freq;
+      g.gain.setValueAtTime(0, now + at);
+      g.gain.linearRampToValueAtTime(.35, now + at + .02);
+      g.gain.exponentialRampToValueAtTime(.001, now + at + .6);
+      o.connect(g).connect(this.ctx.destination); o.start(now + at); o.stop(now + at + .65);
+    });
+  }
+}
+
+/* Draws the stats and notices new entries. */
+class Dashboard {
+  constructor(source, chime) {
+    this.source = source; this.chime = chime; this.lastTotal = null; this.lastTickets = new Set();
+    document.getElementById("demo").hidden = !source.isDemo();
+    const btn = document.getElementById("sound");
+    btn.addEventListener("click", () => {
+      if (this.chime.on) { this.chime.disable(); btn.setAttribute("aria-pressed","false"); btn.textContent = "Turn on sound"; return; }
+      if (this.chime.enable()) { btn.setAttribute("aria-pressed","true"); btn.textContent = "Sound on"; this.chime.play(); }
+    });
+  }
+  start() { this.refresh(); setInterval(() => this.refresh(), (this.source.isDemo() ? 6 : REFRESH_SECONDS) * 1000); }
+  async refresh() {
+    try {
+      const s = await this.source.fetch();
+      this.render(s); this.setStatus(true, "Live · updates every " + (this.source.isDemo() ? 6 : REFRESH_SECONDS) + "s");
+    } catch {
+      this.setStatus(false, "Can't reach the sheet. Retrying…");
+    }
+  }
+  setStatus(ok, text) { document.getElementById("dot").classList.toggle("off", !ok); document.getElementById("status").textContent = text; }
+  setNum(id, n) { document.getElementById(id).textContent = n; }
+  setBar(id, n, total) { document.getElementById(id).style.width = (total ? Math.round(n / total * 100) : 0) + "%"; }
+  ago(iso) {
+    if (!iso) return "";
+    const m = Math.max(0, Math.round((Date.now() - new Date(iso)) / 60000));
+    return m < 1 ? "just now" : m < 60 ? m + " min ago" : Math.floor(m / 60) + " hr ago";
+  }
+  render(s) {
+    const isNew = this.lastTotal !== null && s.total > this.lastTotal;
+    const added = isNew ? s.total - this.lastTotal : 0;
+    this.setNum("total", s.total);
+    ["campus","hack","outreach"].forEach(k => { this.setNum("n-" + k, s[k]); this.setBar("b-" + k, s[k], s.total); });
+    document.getElementById("c-iloilo").textContent = "Iloilo · " + s.hackIloilo;
+    document.getElementById("c-online").textContent = "Online · " + s.hackOnline;
+    document.getElementById("updated").textContent = s.total ? "Updated " + new Date(s.updated).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "Waiting for the first entry";
+
+    const feed = document.getElementById("feed");
+    feed.replaceChildren(...s.recent.map(r => {
+      const li = document.createElement("li");
+      if (isNew && !this.lastTickets.has(r.ticket)) li.className = "new";
+      const t = document.createElement("span"); t.className = "tix"; t.textContent = r.ticket;
+      const w = document.createElement("span"); w.className = "who";
+      const b = document.createElement("b"); b.textContent = r.first || "Someone";
+      const o = document.createElement("span"); o.textContent = [r.org, r.interests].filter(Boolean).join(" · ") || "Raffle only";
+      w.append(b, o);
+      const a = document.createElement("span"); a.className = "ago"; a.textContent = this.ago(r.time);
+      li.append(t, w, a); return li;
+    }));
+    document.getElementById("feed-empty").hidden = s.recent.length > 0;
+    this.lastTickets = new Set(s.recent.map(r => r.ticket));
+
+    const max = s.topOrgs.length ? s.topOrgs[0].count : 0;
+    document.getElementById("orgs").replaceChildren(...s.topOrgs.map(g => {
+      const li = document.createElement("li");
+      const n = document.createElement("span"); n.textContent = g.name;
+      const c = document.createElement("span"); c.textContent = g.count;
+      const bar = document.createElement("div"); bar.className = "bar"; bar.style.gridColumn = "1/-1";
+      const i = document.createElement("i"); i.style.width = Math.round(g.count / max * 100) + "%"; bar.append(i);
+      li.append(n, c, bar); return li;
+    }));
+    document.getElementById("orgs-empty").hidden = s.topOrgs.length > 0;
+
+    if (isNew) this.celebrate(added, s.recent[0]);
+    this.lastTotal = s.total;
+  }
+  celebrate(added, latest) {
+    this.chime.play();
+    const big = document.getElementById("total");
+    big.classList.remove("bump"); void big.offsetWidth; big.classList.add("bump");
+    const toast = document.getElementById("toast");
+    toast.textContent = added > 1 ? added + " new sign-ups!" : "New sign-up: " + (latest && latest.first ? latest.first : "welcome!") + " 🎉";
+    toast.hidden = false; clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => toast.hidden = true, 4000);
+  }
+}
+
+/* Shows a QR code of the sign-up page for people walking past the booth screen. */
+class ScanCard {
+  constructor(url) {
+    document.getElementById("scan-url").textContent = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+    if (window.QRCode) new QRCode(document.getElementById("qr"), { text: url, width: 220, height: 220,
+      colorDark: "#141019", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+  }
+  static defaultUrl() { return location.origin + location.pathname.replace(/[^/]*$/, ""); }
+}
+
+new ScanCard(SIGNUP_URL || ScanCard.defaultUrl());
+
+const source = SHEET_ENDPOINT.startsWith("https://script.google.com/") ? new SheetStatsSource(SHEET_ENDPOINT) : new DemoStatsSource();
+new Dashboard(source, new Chime()).start();
+</script>
+
+</body>
+</html>

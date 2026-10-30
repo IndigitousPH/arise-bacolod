@@ -8,111 +8,131 @@
 <title>Arise PH Booth</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,600;112,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Oswald:wght@600;700&display=swap">
 <style>
-/* Layout: one narrow column, phone-first — a booth visitor fills it on their own phone in under a minute */
+/* Layout: Arise Bacolod poster language — torn paper over an electric blue-magenta band, one phone-width column */
 :root{
-  --bg:#F6F7F4; --surface:#FFFFFF; --ink:#13212C; --muted:#56636C; --line:#D9DED9;
-  --gold:#E3A21A; --gold-ink:#5C3D00; --teal:#0F7472; --teal-soft:#E3F1EF; --err:#B3261E;
-  --display:"Archivo","Arial Narrow",system-ui,sans-serif;
-  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --paper:#F1EEE8; --paper-2:#E6E2DA; --ink:#141019; --muted:#4D4858; --line:#CFC9BF; --card:#FBFAF7;
+  --blue:#2F35E0; --violet:#5B2BD6; --magenta:#E04FC4; --cyan:#29C4F0; --orange:#FF6A13; --err:#C0161B;
+  --display:"Montserrat",system-ui,sans-serif; --cond:"Oswald","Arial Narrow",sans-serif;
+  --body:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color-scheme:light;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0E171E; --surface:#16222B; --ink:#EEF1EE; --muted:#9FAAB0; --line:#2A3943;
-  --gold:#F2B637; --gold-ink:#2A1B00; --teal:#4FC1BC; --teal-soft:#123331; --err:#FF8A80; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0E171E; --surface:#16222B; --ink:#EEF1EE; --muted:#9FAAB0; --line:#2A3943;
-  --gold:#F2B637; --gold-ink:#2A1B00; --teal:#4FC1BC; --teal-soft:#123331; --err:#FF8A80; color-scheme:dark}
-
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;margin:0}
-.wrap{max-width:560px;margin:0 auto;padding-block:28px 56px;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
-  display:flex;flex-direction:column;gap:28px}
+body{background:var(--paper) var(--grain);color:var(--ink);font-family:var(--body);font-weight:500;font-size:16px;line-height:1.5;margin:0}
+.in{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 
-.lockup{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:var(--display);font-weight:600;
-  font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.lockup b{color:var(--ink);font-weight:800}
-.lockup .x{color:var(--gold)}
+/* Electric band with torn bottom edge */
+.band{position:relative;background:var(--grain),radial-gradient(120% 90% at 85% 10%,var(--magenta) 0,transparent 55%),radial-gradient(90% 80% at 0% 100%,var(--cyan) 0,transparent 50%),linear-gradient(135deg,var(--blue),var(--violet));
+  color:#fff;padding-block:22px 46px;
+  clip-path:polygon(0 0,100% 0,100% 88%,96% 91%,91% 87%,86% 92%,80% 89%,74% 94%,68% 90%,61% 95%,55% 90%,49% 94%,42% 89%,36% 93%,30% 88%,23% 93%,17% 89%,11% 94%,5% 90%,0 93%)}
+.band .in{display:flex;flex-direction:column;gap:14px}
+.credit{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.credit span{opacity:.85}
+.doors{font-weight:800;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.75)}
+.gospel{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:800;font-size:clamp(20px,5.6vw,26px);line-height:1.15;text-wrap:balance;margin:0}
+.chev{flex:none;display:flex}
+.chev i{width:16px;height:26px;background:var(--orange);clip-path:polygon(0 0,45% 0,100% 50%,45% 100%,0 100%,55% 50%);margin-right:-4px}
 
-h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,8vw,42px);line-height:1.02;margin:0;text-wrap:balance;letter-spacing:-.01em}
-h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--gold) 62%,var(--gold) 92%,transparent 92%)}
-.lede{margin:12px 0 0;color:var(--muted);max-width:60ch}
+/* Paper title block */
+.title{padding-block:4px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.tag{border:2px solid var(--violet);border-radius:999px;padding:5px 18px;font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+.arise{font-family:var(--display);font-weight:900;margin:0;line-height:.95;letter-spacing:.22em;padding-left:.22em;
+  font-size:clamp(46px,15vw,74px);text-shadow:-2px 0 var(--cyan),2px 0 var(--magenta)}
+.arise small{display:block;font-size:.62em;letter-spacing:.2em;margin-top:.08em}
+.challenge{font-family:var(--display);font-weight:900;color:var(--orange);font-size:clamp(16px,4.6vw,21px);letter-spacing:.02em;margin:0}
+.date{font-family:var(--cond);font-weight:700;font-size:18px;letter-spacing:.02em;margin:0;color:var(--violet)}
 
-.raffle{display:flex;gap:12px;align-items:center;background:var(--gold);color:var(--gold-ink);border-radius:14px;padding:12px 16px;font-weight:700}
-.raffle svg{flex:none}
+main.in{display:flex;flex-direction:column;gap:26px;padding-block:18px 56px}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(25px,6.8vw,32px);line-height:1.08;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--blue),var(--magenta));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{margin:10px 0 0;color:var(--muted);max-width:60ch}
+
+.raffle{display:flex;gap:12px;align-items:center;background:var(--ink);color:#fff;border-radius:6px;padding:12px 16px;font-weight:700;font-size:15px;transform:rotate(-.6deg)}
+.raffle svg{flex:none;color:var(--orange)}
 
 form{display:flex;flex-direction:column;gap:26px}
 fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
-legend{font-family:var(--display);font-weight:800;font-size:19px;padding:0;margin-bottom:4px}
-legend small{display:block;font-family:var(--body);font-weight:400;font-size:15px;color:var(--muted);margin-top:2px}
-
+legend{font-family:var(--display);font-weight:900;font-size:15px;letter-spacing:.14em;text-transform:uppercase;padding:0;margin-bottom:4px}
+legend small{display:block;font-family:var(--body);font-weight:500;font-size:14px;letter-spacing:0;text-transform:none;color:var(--muted);margin-top:4px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .grid .full{grid-column:1/-1}
 @media (max-width:460px){.grid{grid-template-columns:1fr}}
-label.f{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px;min-width:0}
-label.f span.opt{font-weight:400;color:var(--muted)}
-input[type=text],input[type=tel],input[type=email],select{
-  font:inherit;font-size:17px;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);
-  border-radius:10px;padding:12px 13px;width:100%;min-width:0}
-input:focus-visible,select:focus-visible{outline:3px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px;min-width:0}
+label.f span.opt{font-weight:500;color:var(--muted)}
+input[type=text],input[type=tel],input[type=email],select{font:inherit;font-weight:500;font-size:16px;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:8px;padding:12px 13px;width:100%;min-width:0}
+input:focus-visible,select:focus-visible{outline:3px solid var(--violet);outline-offset:1px;border-color:var(--violet)}
 input[aria-invalid=true]{border-color:var(--err)}
 
 .choices{display:flex;flex-direction:column;gap:10px}
-.choice{position:relative;display:flex;gap:14px;align-items:flex-start;background:var(--surface);
-  border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;cursor:pointer}
+.choice{position:relative;display:flex;gap:14px;align-items:flex-start;background:var(--card);border:2px solid var(--line);border-radius:10px;padding:14px 16px;cursor:pointer}
 .choice input{position:absolute;opacity:0;pointer-events:none}
-.box{flex:none;width:24px;height:24px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;margin-top:2px;background:var(--bg)}
+.box{flex:none;width:24px;height:24px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;margin-top:2px;background:var(--paper)}
 .box svg{opacity:0}
-.choice:has(input:checked){border-color:var(--teal);background:var(--teal-soft)}
-.choice:has(input:checked) .box{background:var(--teal);border-color:var(--teal)}
+.box svg path{stroke:#fff}
+.choice:has(input:checked){border-color:var(--violet);background:#EFEAFB;box-shadow:4px 4px 0 var(--orange)}
+.choice:has(input:checked) .box{background:var(--violet);border-color:var(--violet)}
 .choice:has(input:checked) .box svg{opacity:1}
-.choice:has(input:focus-visible){outline:3px solid var(--teal);outline-offset:2px}
-.choice strong{display:block;font-family:var(--display);font-weight:800;font-size:17px;line-height:1.2}
-.choice p{margin:4px 0 0;font-size:15px;color:var(--muted)}
-.box svg path{stroke:var(--surface)}
-
+.choice:has(input:focus-visible){outline:3px solid var(--violet);outline-offset:2px}
+.choice strong{display:block;font-family:var(--display);font-weight:800;font-size:16px;line-height:1.25}
+.choice p{margin:4px 0 0;font-size:14px;color:var(--muted)}
 .sub{display:flex;gap:8px;flex-wrap:wrap;margin:-2px 0 2px 38px}
 .pill{position:relative}
 .pill input{position:absolute;opacity:0}
-.pill span{display:inline-block;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-size:15px;font-weight:700;cursor:pointer}
-.pill input:checked+span{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.pill input:focus-visible+span{outline:3px solid var(--teal);outline-offset:2px}
-.hackmeta{margin:0 0 0 38px;font-size:14px;color:var(--muted)}
+.pill span{display:inline-block;padding:8px 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);font-size:14px;font-weight:700;cursor:pointer}
+.pill input:checked+span{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pill input:focus-visible+span{outline:3px solid var(--violet);outline-offset:2px}
+.hackinfo{margin:0 0 0 38px;display:grid;gap:8px}
+.ev{display:flex;flex-direction:column;gap:2px;background:var(--card);border-left:4px solid var(--orange);border-radius:4px;padding:8px 12px;font-size:13px;color:var(--muted);min-width:0}
+.fee{align-self:flex-start;margin-top:4px;font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+.fee.free{background:#DDF3E6;color:#0D5A2C}
+.fee.paid{background:#FFE6D6;color:#8A3200}
+.ev strong{font-family:var(--display);font-weight:800;font-size:14px;color:var(--ink)}
+.ev a,.done a{color:var(--violet);font-weight:700;overflow-wrap:anywhere}
 
-.consent{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:var(--muted)}
-.consent input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--teal)}
-
-button.go{font:inherit;font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:.02em;
-  background:var(--ink);color:var(--bg);border:0;border-radius:14px;padding:17px;cursor:pointer;width:100%}
-button.go:hover{background:var(--teal)}
-button.go:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
-button.go[disabled]{opacity:.6;cursor:progress}
+.consent{display:flex;gap:12px;align-items:flex-start;font-size:13px;color:var(--muted)}
+.consent input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--violet)}
+button.go{font:inherit;font-family:var(--display);font-weight:900;font-size:16px;letter-spacing:.1em;text-transform:uppercase;
+  background:linear-gradient(100deg,var(--blue),var(--violet) 45%,var(--magenta));color:#fff;border:0;border-radius:12px;padding:18px;cursor:pointer;width:100%;box-shadow:5px 5px 0 var(--ink)}
+button.go:hover{filter:brightness(1.08)}
+button.go:active{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--ink)}
+button.go:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+button.go[disabled]{opacity:.65;cursor:progress}
 .error{color:var(--err);font-weight:700;margin:0}
 
-.done{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:26px 22px;display:flex;flex-direction:column;gap:14px}
-.ticket{align-self:flex-start;font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:.06em;
-  background:var(--gold);color:var(--gold-ink);padding:8px 16px;border-radius:10px;font-variant-numeric:tabular-nums}
-.done h2{font-family:var(--display);font-weight:800;font-size:26px;margin:0;line-height:1.1}
+.done{background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:26px 22px;display:flex;flex-direction:column;gap:14px;box-shadow:6px 6px 0 var(--orange)}
+.ticket{align-self:flex-start;font-family:var(--cond);font-weight:700;font-size:34px;letter-spacing:.08em;background:linear-gradient(100deg,var(--blue),var(--magenta));color:#fff;padding:6px 18px;border-radius:8px;font-variant-numeric:tabular-nums}
+.done h2{font-family:var(--display);font-weight:900;font-size:24px;margin:0;line-height:1.1}
 .done p{margin:0;color:var(--muted)}
 .done ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
-button.again{font:inherit;font-weight:700;background:transparent;color:var(--teal);border:1.5px solid var(--teal);border-radius:12px;padding:12px;cursor:pointer}
+button.again{font:inherit;font-weight:700;background:transparent;color:var(--violet);border:2px solid var(--violet);border-radius:10px;padding:12px;cursor:pointer}
 
-footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
-footer a{color:var(--teal)}
-@media (prefers-reduced-motion:no-preference){.choice,.pill span,button{transition:background .15s,border-color .15s}}
+footer{font-size:13px;color:var(--muted);border-top:2px dashed var(--line);padding-top:16px;display:flex;flex-direction:column;gap:4px}
+footer a{color:var(--violet);font-weight:700}
+@media (prefers-reduced-motion:no-preference){.choice,.pill span,button{transition:background .15s,border-color .15s,box-shadow .15s,transform .1s}}
 </style>
 
-<main class="wrap">
-  <header>
-    <div class="lockup"><b>Cru Philippines</b><span class="x">×</span><b>Indigitous</b><span>· Arise Philippines</span></div>
-  </header>
+<header class="band">
+  <div class="in">
+    <div class="credit"><span>Cru Philippines × Indigitous</span><span>Booth</span></div>
+    <div class="doors">Open up the doors</div>
+    <p class="gospel"><span class="chev" aria-hidden="true"><i></i><i></i></span>Go where there is no Gospel</p>
+  </div>
+</header>
 
+<div class="in title">
+  <span class="tag">Missions Conference</span>
+  <h2 class="arise" aria-label="Arise Bacolod">ARISE<small>BACOLOD</small></h2>
+  <p class="challenge">ONE LIFE • ONE CHALLENGE</p>
+  <p class="date">Oct 31, 2026 · Ikthus Church, Bacolod City</p>
+</div>
+
+<main class="in">
   <section>
     <h1>Your campus is already online. <em>Let's go there together.</em></h1>
-    <p class="lede">We're helping students and churches live out missions in a digital age. Leave your details, pick how you'd like to take part, and you're in today's raffle.</p>
+    <p class="lede">Cru Philippines and Indigitous help students and churches live out missions in a digital age. Leave your details, pick how you'd like to take part, and you're in today's raffle.</p>
   </section>
-
   <div class="raffle">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4V8Z" stroke="currentColor" stroke-width="2"/><path d="M14 6v12" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/></svg>
     <span>Every sign-up gets a raffle number. Watch for the draw at our booth.</span>
@@ -128,8 +148,8 @@ footer a{color:var(--teal)}
         <label class="f" for="mobile">Mobile number
           <input id="mobile" name="mobile" type="tel" inputmode="tel" autocomplete="tel" placeholder="09XX XXX XXXX" required>
         </label>
-        <label class="f" for="email">Email <span class="opt">(optional)</span>
-          <input id="email" name="email" type="email" autocomplete="email">
+        <label class="f" for="email">Email
+          <input id="email" name="email" type="email" autocomplete="email" required>
         </label>
         <label class="f full" for="org">Campus or church
           <input id="org" name="org" type="text" placeholder="e.g. UP Visayas, or your church's name" required>
@@ -148,8 +168,8 @@ footer a{color:var(--teal)}
         <label class="f" for="city">City or province
           <input id="city" name="city" type="text" autocomplete="address-level2">
         </label>
-        <label class="f full" for="facebook">Facebook name or link <span class="opt">(optional)</span>
-          <input id="facebook" name="facebook" type="text" placeholder="So we can message you">
+        <label class="f full" for="facebook">Facebook or other social media <span class="opt">(optional)</span>
+          <input id="facebook" name="facebook" type="text" placeholder="e.g. FB: Juan Dela Cruz, IG: @juandc, TikTok: @juan">
         </label>
       </div>
     </fieldset>
@@ -160,19 +180,32 @@ footer a{color:var(--teal)}
         <label class="choice" for="c-campus">
           <input id="c-campus" type="checkbox" name="interest" value="Reach my campus">
           <span class="box"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5.5 11 12 3.5" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span><strong>I commit to reach my campus</strong><p>Pray for and share Jesus with the people on your campus, online and in person. We'll help you start.</p></span>
+          <span><strong>I commit to reach my campus</strong><p>Pray for and share Jesus with the people on your campus, online and in person. Someone from Cru Philippines – Western Visayas will contact you to help you start.</p></span>
         </label>
 
         <label class="choice" for="c-hack">
           <input id="c-hack" type="checkbox" name="interest" value="Join #HACK">
           <span class="box"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5.5 11 12 3.5" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span><strong>Keep me posted about #HACK</strong><p>Creatives, writers, designers and builders come together to make things that help more people discover Jesus. No coding needed.</p></span>
+          <span><strong>Keep me posted about #HACK</strong><p>Creatives, writers, designers and builders come together to make things that help more people discover Jesus. No coding needed. Join one or both.</p></span>
         </label>
-        <div id="hack-where" class="sub" role="radiogroup" aria-label="Where would you join #HACK?" hidden>
-          <label class="pill"><input type="radio" name="hack_where" value="Iloilo (in person)" id="hw-iloilo"><span>In Iloilo</span></label>
-          <label class="pill"><input type="radio" name="hack_where" value="Online" id="hw-online"><span>Online</span></label>
+        <div id="hack-where" class="sub" role="group" aria-label="Which #HACK events? Pick one or both." hidden>
+          <label class="pill"><input type="checkbox" name="hack_where" value="Iloilo (in person)" id="hw-iloilo"><span>In Iloilo · Nov 20–21</span></label>
+          <label class="pill"><input type="checkbox" name="hack_where" value="Online" id="hw-online"><span>Online · Nov 7</span></label>
         </div>
-        <p id="hack-meta" class="hackmeta" hidden>#HACK Christmas Iloilo · Nov 20–21 · Iloilo C&amp;MA Church, Smallville</p>
+        <div id="hack-meta" class="hackinfo" hidden>
+          <div class="ev" data-where="Iloilo (in person)">
+            <strong>#HACK Christmas Iloilo</strong>
+            <span>Nov 20–21, 2026 · Iloilo C&amp;MA Church, Smallville</span>
+            <span class="fee paid">₱200</span>
+            <a href="https://ndgt.us/iloilo-hack" target="_blank" rel="noopener">Register: ndgt.us/iloilo-hack</a>
+          </div>
+          <div class="ev" data-where="Online">
+            <strong>#HACK Kalima · Online Creative Sprint</strong>
+            <span>Nov 7, 2026 · 9am–1:30pm · on Discord</span>
+            <span class="fee free">Free</span>
+            <a href="https://tinyurl.com/OnlineCreativeSprint" target="_blank" rel="noopener">Register: tinyurl.com/OnlineCreativeSprint</a>
+          </div>
+        </div>
 
         <label class="choice" for="c-outreach">
           <input id="c-outreach" type="checkbox" name="interest" value="Digital outreach with church/campus">
@@ -194,47 +227,73 @@ footer a{color:var(--teal)}
   <section id="done" class="done" hidden aria-live="polite">
     <span class="ticket" id="ticket">AR-0000</span>
     <h2 id="done-title">You're in, friend!</h2>
-    <p>Show this raffle number at the booth if your name is called. Take a screenshot so you have it.</p>
+    <p id="done-note">Show this raffle number at the booth if your name is called. Take a screenshot so you have it.</p>
     <ul id="done-list"></ul>
     <button class="again" type="button" id="again">Sign up someone else</button>
   </section>
 
-  <footer>Learn more: <a href="https://hack.indigitous.org" target="_blank" rel="noopener">hack.indigitous.org</a> · <a href="https://indigitous.org" target="_blank" rel="noopener">indigitous.org</a></footer>
+  <footer><span>Booth by Cru Philippines and Indigitous at Arise Bacolod.</span><span><a href="https://hack.indigitous.org" target="_blank" rel="noopener">hack.indigitous.org</a> · <a href="https://indigitous.org" target="_blank" rel="noopener">indigitous.org</a></span></footer>
 </main>
+
 
 <script>
 /* Paste your Google Apps Script web app URL here. Leave empty to run in preview mode. */
-const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbxQL_wGmPqvwYrwGBb2sGBlwP5jb7DxMPjsKuiewxAn6XNIl5rMYWi9qGjrb_uVBypu4w/exec";
+const SHEET_ENDPOINT = "";
 
-/* Sends one signup to the Google Sheet. Knows nothing about the form. */
+const HACK_LINKS = { "Online": "https://tinyurl.com/OnlineCreativeSprint", "Iloilo (in person)": "https://ndgt.us/iloilo-hack" };
+
+/* Talks to the Google Sheet. Knows nothing about the form. */
 class SheetGateway {
-  constructor(endpoint) { this.endpoint = endpoint; }
+  constructor(endpoint) { this.endpoint = endpoint; this.n = 0; }
   isConfigured() { return this.endpoint.startsWith("https://script.google.com/"); }
   async save(signup) {
-    if (!this.isConfigured()) return; // preview mode: nothing is sent
     const body = new URLSearchParams(signup.toRecord());
     // no-cors: Apps Script accepts the post; the response is opaque, so a network error is the only failure we can see
     await fetch(this.endpoint, { method: "POST", mode: "no-cors", body });
   }
+  /* Asks whether this person is already in. Only fingerprints of mobile and email go in the URL, never the details. */
+  lookup(signup) { return this.jsonp({ action: "check", mh: signup.mobileHash, eh: signup.emailHash }); }
+  jsonp(params) {
+    return new Promise((resolve, reject) => {
+      const cb = "__ariseCheck" + (++this.n);
+      const s = document.createElement("script");
+      const done = () => { delete window[cb]; s.remove(); clearTimeout(t); };
+      const t = setTimeout(() => { done(); reject(new Error("timeout")); }, 12000);
+      window[cb] = data => { done(); resolve(data); };
+      s.onerror = () => { done(); reject(new Error("network")); };
+      s.src = this.endpoint + "?" + new URLSearchParams({ ...params, callback: cb, t: Date.now() });
+      document.head.appendChild(s);
+    });
+  }
 }
 
-/* One person's signup: holds the data and knows how to validate itself. */
+/* One person's signup: holds the data and knows how to validate and fingerprint itself. */
 class Signup {
-  constructor(fields) { Object.assign(this, fields); this.ticket = Signup.newTicket(); }
-  static newTicket() { return "AR-" + String(Math.floor(1000 + Math.random() * 9000)); }
+  constructor(fields) { Object.assign(this, fields); this.ticket = ""; this.returning = false; }
+  static previewTicket() { return "AR-" + String(Math.floor(1 + Math.random() * 999)).padStart(4, "0"); }
+  static mobileKey(m) { return m.replace(/\D/g, "").slice(-10); }
+  static emailKey(e) { return e.trim().toLowerCase(); }
+  static async sha256(text) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+  async fingerprint() {
+    this.mobileHash = await Signup.sha256("m:" + Signup.mobileKey(this.mobile));
+    this.emailHash = await Signup.sha256("e:" + Signup.emailKey(this.email));
+  }
   problems() {
     const p = [];
     if (!this.name.trim()) p.push("name");
-    if (this.mobile.replace(/\D/g, "").length < 10) p.push("mobile");
+    if (Signup.mobileKey(this.mobile).length < 10) p.push("mobile");
     if (!this.org.trim()) p.push("org");
-    if (this.email && !/^\S+@\S+\.\S+$/.test(this.email)) p.push("email");
+    if (!/^\S+@\S+\.\S+$/.test(this.email)) p.push("email");
     if (!this.consent) p.push("consent");
     return p;
   }
   toRecord() {
-    return { ticket: this.ticket, name: this.name, mobile: this.mobile, email: this.email, org: this.org,
+    return { name: this.name, mobile: this.mobile, email: this.email, org: this.org,
       role: this.role, city: this.city, facebook: this.facebook, interests: this.interests.join(", "),
-      hack_where: this.hackWhere, source: "Arise Philippines booth" };
+      hack_where: this.hackWhere, source: "Arise Bacolod booth" };
   }
 }
 
@@ -245,20 +304,27 @@ class SignupForm {
     this.form = document.getElementById("signup");
     this.form.addEventListener("submit", e => { e.preventDefault(); this.submit(); });
     document.getElementById("c-hack").addEventListener("change", e => this.toggleHack(e.target.checked));
+    this.form.querySelectorAll("input[name=hack_where]").forEach(r => r.addEventListener("change", () => this.showHackEvent()));
     document.getElementById("again").addEventListener("click", () => this.reset());
   }
   toggleHack(on) {
     document.getElementById("hack-where").hidden = !on;
     document.getElementById("hack-meta").hidden = !on;
+    this.showHackEvent();
+  }
+  /* Show the events the visitor picked; both when none is picked yet */
+  showHackEvent() {
+    const picked = [...this.form.querySelectorAll("input[name=hack_where]:checked")].map(i => i.value);
+    document.querySelectorAll("#hack-meta .ev").forEach(ev => { ev.hidden = picked.length > 0 && !picked.includes(ev.dataset.where); });
   }
   read() {
     const v = id => document.getElementById(id).value.trim();
-    const where = this.form.querySelector("input[name=hack_where]:checked");
+    const wheres = [...this.form.querySelectorAll("input[name=hack_where]:checked")].map(i => i.value);
     return new Signup({
       name: v("name"), mobile: v("mobile"), email: v("email"), org: v("org"), role: v("role"),
       city: v("city"), facebook: v("facebook"), consent: document.getElementById("consent").checked,
       interests: [...this.form.querySelectorAll("input[name=interest]:checked")].map(i => i.value),
-      hackWhere: where ? where.value : ""
+      hackWheres: wheres, hackWhere: wheres.join(" + ")
     });
   }
   showError(msg) { const el = document.getElementById("error"); el.textContent = msg; el.hidden = !msg; }
@@ -268,7 +334,7 @@ class SignupForm {
     ["name","mobile","org","email"].forEach(id =>
       document.getElementById(id).setAttribute("aria-invalid", problems.includes(id)));
     if (problems.length) {
-      const labels = { name:"your name", mobile:"a mobile number (11 digits)", org:"your campus or church", email:"a valid email", consent:"the privacy agreement" };
+      const labels = { name:"your name", mobile:"a mobile number (11 digits)", org:"your campus or church", email:"a valid email address", consent:"the privacy agreement" };
       this.showError("Please add " + problems.map(p => labels[p]).join(", ") + ".");
       return;
     }
@@ -276,7 +342,17 @@ class SignupForm {
     const btn = document.getElementById("submit");
     btn.disabled = true; btn.textContent = "Saving…";
     try {
-      await this.gateway.save(signup);
+      if (this.gateway.isConfigured()) {
+        await signup.fingerprint();
+        const before = await this.gateway.lookup(signup).catch(() => null);
+        signup.returning = !!(before && before.exists);
+        await this.gateway.save(signup); // the sheet merges a returning person into their first entry
+        let after = null;
+        for (let i = 0; i < 3 && !(after && after.ticket); i++) after = await this.gateway.lookup(signup).catch(() => null);
+        signup.ticket = (after && after.ticket) || (before && before.ticket) || "";
+      } else {
+        signup.ticket = Signup.previewTicket(); // preview mode: nothing is sent
+      }
       this.confirm(signup);
     } catch {
       this.showError("We couldn't save that. Check your internet connection and tap Sign up again.");
@@ -285,16 +361,33 @@ class SignupForm {
     }
   }
   confirm(signup) {
-    document.getElementById("ticket").textContent = signup.ticket;
-    document.getElementById("done-title").textContent = "You're in, " + signup.name.split(" ")[0] + "!";
-    const next = {
-      "Reach my campus": "We'll message you to help you start reaching your campus.",
-      "Join #HACK": signup.hackWhere ? "We'll send you #HACK details (" + signup.hackWhere + ")." : "We'll send you #HACK details.",
-      "Digital outreach with church/campus": "We'll reach out to plan a digital outreach with your group."
+    const first = signup.name.split(" ")[0];
+    document.getElementById("ticket").textContent = signup.ticket || "Saved ✓";
+    document.getElementById("done-title").textContent = (signup.returning ? "You're already in, " : "You're in, ") + first + "!";
+    document.getElementById("done-note").textContent = signup.returning
+      ? "We found your earlier entry, so you keep the same single raffle number. Anything new you picked was added."
+      : signup.ticket ? "Show this raffle number at the booth if your name is called. Take a screenshot so you have it."
+      : "You're entered. We couldn't load your raffle number, so listen for your name at the draw.";
+    const CAMPUS = "Someone from Cru Philippines – Western Visayas will contact you to help you start reaching your campus.";
+    const HACK_TEXT = {
+      "Online": "Register for #HACK Kalima, the Online Creative Sprint (free · Nov 7, 9am–1:30pm, Discord): ",
+      "Iloilo (in person)": "Register for #HACK Christmas Iloilo (₱200 · Nov 20–21, Iloilo C&MA Church): "
     };
-    document.getElementById("done-list").replaceChildren(...signup.interests.map(i => {
-      const li = document.createElement("li"); li.textContent = next[i]; return li;
-    }));
+    const item = (text, url) => {
+      const li = document.createElement("li"); li.textContent = text;
+      if (url) { const a = document.createElement("a"); a.href = url; a.target = "_blank"; a.rel = "noopener"; a.textContent = url.replace("https://", ""); li.append(a); }
+      return li;
+    };
+    const items = [];
+    signup.interests.forEach(i => {
+      if (i === "Reach my campus") items.push(item(CAMPUS));
+      if (i === "Digital outreach with church/campus") items.push(item("We'll reach out to plan a digital outreach with your group."));
+      if (i === "Join #HACK") {
+        if (!signup.hackWheres.length) items.push(item("We'll send you #HACK details."));
+        signup.hackWheres.forEach(w => items.push(item(HACK_TEXT[w], HACK_LINKS[w])));
+      }
+    });
+    document.getElementById("done-list").replaceChildren(...items);
     this.form.hidden = true;
     document.getElementById("done").hidden = false;
     window.scrollTo({ top: 0, behavior: "smooth" });

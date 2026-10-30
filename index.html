@@ -99,7 +99,9 @@ button.go:hover{filter:brightness(1.08)}
 button.go:active{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--ink)}
 button.go:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
 button.go[disabled]{opacity:.65;cursor:progress}
-.error{color:var(--err);font-weight:700;margin:0}
+.error{margin:0;display:flex;flex-direction:column;gap:4px;padding:12px 14px;border:2px solid var(--err);border-left-width:6px;border-radius:8px;background:#FDECEC}
+.error strong{font-weight:800;font-size:15px;color:#6E0B0F}
+.error small{font-size:12px;font-weight:600;color:var(--err);overflow-wrap:anywhere}
 
 .done{background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:26px 22px;display:flex;flex-direction:column;gap:14px;box-shadow:6px 6px 0 var(--orange)}
 .ticket{align-self:flex-start;font-family:var(--cond);font-weight:700;font-size:34px;letter-spacing:.08em;background:linear-gradient(100deg,var(--blue),var(--magenta));color:#fff;padding:6px 18px;border-radius:8px;font-variant-numeric:tabular-nums}
@@ -196,7 +198,7 @@ footer a{color:var(--violet);font-weight:700}
           <div class="ev" data-where="Iloilo (in person)">
             <strong>#HACK Christmas Iloilo</strong>
             <span>Nov 20–21, 2026 · Iloilo C&amp;MA Church, Smallville</span>
-            <span class="fee paid">Paid · ₱200</span>
+            <span class="fee paid">₱200</span>
             <a href="https://ndgt.us/iloilo-hack" target="_blank" rel="noopener">Register: ndgt.us/iloilo-hack</a>
           </div>
           <div class="ev" data-where="Online">
@@ -238,9 +240,14 @@ footer a{color:var(--violet);font-weight:700}
 
 <script>
 /* Paste your Google Apps Script web app URL here. Leave empty to run in preview mode. */
-const SHEET_ENDPOINT = "";
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbzUopZZDMgkIX4oCm_3-7nk7oDUkJUb_GJO_MiAyPd__slKLH07ytgfGIPts1Gyy3w67w/exec";
 
 const HACK_LINKS = { "Online": "https://tinyurl.com/OnlineCreativeSprint", "Iloilo (in person)": "https://ndgt.us/iloilo-hack" };
+
+/* A problem the visitor should see: a plain message, plus technical details for the booth team. */
+class SignupError extends Error {
+  constructor(code, message, detail) { super(message); this.code = code; this.detail = detail || ""; }
+}
 
 /* Talks to the Google Sheet. Knows nothing about the form. */
 class SheetGateway {
@@ -249,18 +256,26 @@ class SheetGateway {
   async save(signup) {
     const body = new URLSearchParams(signup.toRecord());
     // no-cors: Apps Script accepts the post; the response is opaque, so a network error is the only failure we can see
-    await fetch(this.endpoint, { method: "POST", mode: "no-cors", body });
+    try { await fetch(this.endpoint, { method: "POST", mode: "no-cors", body }); }
+    catch (e) { throw new SignupError("send_failed", "We couldn't send your sign-up. Check your internet connection and tap Sign up again.", "save request failed: " + e.message); }
   }
   /* Asks whether this person is already in. Only fingerprints of mobile and email go in the URL, never the details. */
-  lookup(signup) { return this.jsonp({ action: "check", mh: signup.mobileHash, eh: signup.emailHash }); }
+  async lookup(signup) {
+    const r = await this.jsonp({ action: "check", mh: signup.mobileHash, eh: signup.emailHash });
+    if (!r || typeof r.exists !== "boolean") throw new SignupError("bad_response", "The sign-up sheet sent back something unexpected. Please let the booth team know.", "check returned no 'exists' field — is the latest Apps Script deployed?");
+    return r;
+  }
   jsonp(params) {
     return new Promise((resolve, reject) => {
       const cb = "__ariseCheck" + (++this.n);
       const s = document.createElement("script");
       const done = () => { delete window[cb]; s.remove(); clearTimeout(t); };
-      const t = setTimeout(() => { done(); reject(new Error("timeout")); }, 12000);
-      window[cb] = data => { done(); resolve(data); };
-      s.onerror = () => { done(); reject(new Error("network")); };
+      let answered = false;
+      const t = setTimeout(() => { done(); reject(new SignupError("timeout", "The sign-up sheet is taking too long to answer. Please tap Sign up again.", "check request timed out after 12s")); }, 12000);
+      window[cb] = data => { answered = true; done(); resolve(data); };
+      s.onerror = () => { done(); reject(new SignupError("unreachable", "We couldn't reach the sign-up sheet. Check your internet connection, or let the booth team know.", "check request failed to load (offline, blocked, or wrong Apps Script URL)")); };
+      // Loaded but never called back: Google sent an error page instead of data
+      s.onload = () => setTimeout(() => { if (!answered) { done(); reject(new SignupError("bad_response", "The sign-up sheet isn't set up correctly yet. Please let the booth team know.", "Apps Script returned an error page — deploy the latest code as a New version with access set to Anyone")); } }, 0);
       s.src = this.endpoint + "?" + new URLSearchParams({ ...params, callback: cb, t: Date.now() });
       document.head.appendChild(s);
     });
@@ -327,7 +342,16 @@ class SignupForm {
       hackWheres: wheres, hackWhere: wheres.join(" + ")
     });
   }
-  showError(msg) { const el = document.getElementById("error"); el.textContent = msg; el.hidden = !msg; }
+  showError(msg, detail) {
+    const el = document.getElementById("error");
+    el.replaceChildren();
+    if (msg) {
+      const m = document.createElement("strong"); m.textContent = msg; el.append(m);
+      if (detail) { const d = document.createElement("small"); d.textContent = "Details: " + detail; el.append(d); }
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+    el.hidden = !msg;
+  }
   async submit() {
     const signup = this.read();
     const problems = signup.problems();
@@ -343,19 +367,31 @@ class SignupForm {
     btn.disabled = true; btn.textContent = "Saving…";
     try {
       if (this.gateway.isConfigured()) {
+        if (!navigator.onLine) throw new SignupError("offline", "You seem to be offline. Connect to the internet and tap Sign up again.");
+        if (!(window.crypto && crypto.subtle)) throw new SignupError("insecure", "This page has to be opened with https:// to save sign-ups. Please let the booth team know.", "crypto.subtle unavailable (page not served over https)");
         await signup.fingerprint();
-        const before = await this.gateway.lookup(signup).catch(() => null);
-        signup.returning = !!(before && before.exists);
-        await this.gateway.save(signup); // the sheet merges a returning person into their first entry
-        let after = null;
-        for (let i = 0; i < 3 && !(after && after.ticket); i++) after = await this.gateway.lookup(signup).catch(() => null);
-        signup.ticket = (after && after.ticket) || (before && before.ticket) || "";
+        const before = await this.gateway.lookup(signup);
+        if (before.exists) {
+          ["mobile","email"].forEach(id => document.getElementById(id).setAttribute("aria-invalid", "true"));
+          throw new SignupError("duplicate", "You're already signed up with this mobile number or email" +
+            (before.ticket ? " (raffle number " + before.ticket + ")" : "") + ". Each person can only enter once.");
+        }
+        await this.gateway.save(signup);
+        let after = null, lastErr = null;
+        for (let i = 0; i < 3 && !(after && after.ticket); i++) {
+          try { after = await this.gateway.lookup(signup); } catch (e) { lastErr = e; }
+        }
+        if (!(after && after.ticket)) throw new SignupError("unconfirmed",
+          "We sent your sign-up but couldn't confirm it was saved. Tap Sign up again. If it then says you're already signed up, you're in.",
+          lastErr ? (lastErr.detail || lastErr.message) : "sheet didn't return a raffle number after saving");
+        signup.ticket = after.ticket;
       } else {
         signup.ticket = Signup.previewTicket(); // preview mode: nothing is sent
       }
       this.confirm(signup);
-    } catch {
-      this.showError("We couldn't save that. Check your internet connection and tap Sign up again.");
+    } catch (err) {
+      if (err instanceof SignupError) this.showError(err.message, err.detail);
+      else this.showError("Something went wrong while saving. Please tap Sign up again.", err && err.message);
     } finally {
       btn.disabled = false; btn.textContent = "Sign up & get my raffle number";
     }

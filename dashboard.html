@@ -38,8 +38,6 @@ button.sound{font:inherit;font-weight:800;font-size:14px;letter-spacing:.08em;te
 button.sound[aria-pressed=true]{background:var(--card)}
 button.sound:focus-visible{outline:3px solid #fff;outline-offset:3px}
 
-.demo{background:var(--ink);color:#fff;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:600}
-.demo b{color:var(--orange)}
 
 .grid{display:grid;grid-template-columns:300px minmax(0,4fr) minmax(0,6fr);gap:20px}
 @media (max-width:1150px){.grid{grid-template-columns:300px minmax(0,1fr)}.grid .options{grid-column:1/-1}}
@@ -109,7 +107,6 @@ button.sound:focus-visible{outline:3px solid #fff;outline-offset:3px}
     </div>
   </header>
 
-  <p class="demo" id="demo" hidden><b>Demo data.</b> Example entries arrive every few seconds so you can test the chime. Paste your Apps Script URL into the page to show real sign-ups.</p>
 
   <section class="grid">
     <aside class="scan" aria-label="Scan to join on your phone">
@@ -163,8 +160,8 @@ button.sound:focus-visible{outline:3px solid #fff;outline-offset:3px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-/* Paste the same Apps Script web app URL you used on the sign-up page. Leave empty for demo data. */
-const SHEET_ENDPOINT = "";
+/* Paste the same Apps Script web app URL you used on the sign-up page. */
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbzUopZZDMgkIX4oCm_3-7nk7oDUkJUb_GJO_MiAyPd__slKLH07ytgfGIPts1Gyy3w67w/exec";
 const REFRESH_SECONDS = 10;
 
 /* The sign-up page the QR code opens. Leave empty if index.html sits in the same folder as this dashboard. */
@@ -173,7 +170,7 @@ const SIGNUP_URL = "";
 /* Reads live totals from the Google Sheet (JSONP, so it works from any host). */
 class SheetStatsSource {
   constructor(endpoint) { this.endpoint = endpoint; this.n = 0; }
-  isDemo() { return false; }
+  isConfigured() { return this.endpoint.startsWith("https://script.google.com/"); }
   fetch() {
     return new Promise((resolve, reject) => {
       const cb = "__ariseStats" + (++this.n);
@@ -185,34 +182,6 @@ class SheetStatsSource {
       s.src = this.endpoint + (this.endpoint.includes("?") ? "&" : "?") + "callback=" + cb + "&t=" + Date.now();
       document.head.appendChild(s);
     });
-  }
-}
-
-/* Makes up example entries so the page can be tried before the sheet is connected. */
-class DemoStatsSource {
-  constructor() {
-    this.rows = [];
-    this.names = ["Andrea","Miguel","Joy","Paolo","Kyla","Jerome","Bea","Carlo","Tricia","Nathan","Rica","Josh"];
-    this.orgs = ["UP Visayas","USLS","CPU","WVSU","La Salle Bacolod","Ikthus Church","STI West Negros","Riverside College"];
-    for (let i = 0; i < 6; i++) this.add(Date.now() - (6 - i) * 90000);
-  }
-  isDemo() { return true; }
-  pick(a) { return a[Math.floor(Math.random() * a.length)]; }
-  add(time) {
-    const interests = ["Reach my campus","Join #HACK","Digital outreach with church/campus"].filter(() => Math.random() < .5);
-    const where = interests.includes("Join #HACK") ? ["Iloilo (in person)","Online"].filter(() => Math.random() < .6) : [];
-    this.rows.push({ ticket: "AR-" + (1000 + Math.floor(Math.random() * 9000)), first: this.pick(this.names),
-      org: this.pick(this.orgs), interests: interests.join(", "), where: where.join(" + "), time: new Date(time).toISOString() });
-  }
-  async fetch() {
-    if (Math.random() < .5) this.add(Date.now());
-    const r = this.rows, has = (x, k) => x.interests.includes(k);
-    const orgs = {}; r.forEach(x => orgs[x.org] = (orgs[x.org] || 0) + 1);
-    return { total: r.length, campus: r.filter(x => has(x,"Reach my campus")).length, hack: r.filter(x => has(x,"Join #HACK")).length,
-      hackIloilo: r.filter(x => x.where.includes("Iloilo")).length, hackOnline: r.filter(x => x.where.includes("Online")).length,
-      outreach: r.filter(x => has(x,"Digital outreach")).length,
-      topOrgs: Object.entries(orgs).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 5),
-      recent: r.slice(-8).reverse(), updated: new Date().toISOString() };
   }
 }
 
@@ -244,18 +213,20 @@ class Chime {
 class Dashboard {
   constructor(source, chime) {
     this.source = source; this.chime = chime; this.lastTotal = null; this.lastTickets = new Set();
-    document.getElementById("demo").hidden = !source.isDemo();
     const btn = document.getElementById("sound");
     btn.addEventListener("click", () => {
       if (this.chime.on) { this.chime.disable(); btn.setAttribute("aria-pressed","false"); btn.textContent = "Turn on sound"; return; }
       if (this.chime.enable()) { btn.setAttribute("aria-pressed","true"); btn.textContent = "Sound on"; this.chime.play(); }
     });
   }
-  start() { this.refresh(); setInterval(() => this.refresh(), (this.source.isDemo() ? 6 : REFRESH_SECONDS) * 1000); }
+  start() {
+    if (!this.source.isConfigured()) { this.setStatus(false, "Not connected: add your Apps Script URL to this page"); return; }
+    this.refresh(); setInterval(() => this.refresh(), REFRESH_SECONDS * 1000);
+  }
   async refresh() {
     try {
       const s = await this.source.fetch();
-      this.render(s); this.setStatus(true, "Live · updates every " + (this.source.isDemo() ? 6 : REFRESH_SECONDS) + "s");
+      this.render(s); this.setStatus(true, "Live · updates every " + REFRESH_SECONDS + "s");
     } catch {
       this.setStatus(false, "Can't reach the sheet. Retrying…");
     }
@@ -329,8 +300,7 @@ class ScanCard {
 
 new ScanCard(SIGNUP_URL || ScanCard.defaultUrl());
 
-const source = SHEET_ENDPOINT.startsWith("https://script.google.com/") ? new SheetStatsSource(SHEET_ENDPOINT) : new DemoStatsSource();
-new Dashboard(source, new Chime()).start();
+new Dashboard(new SheetStatsSource(SHEET_ENDPOINT), new Chime()).start();
 </script>
 
 </body>
